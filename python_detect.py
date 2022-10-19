@@ -12,7 +12,7 @@ CENTER_COLOR = (0, 255, 0)
 CORNER_COLOR = (255, 0, 255)
 
 #Camera Constants
-VIDEO_DEV = 2 #Video Device ID for the camera used. Probably 0 or 1 for Webcam, 2 or 3 for internal
+VIDEO_DEV = 0 #Video Device ID for the camera used. Probably 0 or 1 for Webcam, 2 or 3 for internal
 FRAME_HEIGHT = 480 #Height of the camera being used
 FRAME_WIDTH = 640 #Width of the camera being used
 FRAME_RATE = 30
@@ -63,7 +63,11 @@ while looping:
     else:
         for detect in detections:
             print("tag_id: %s, center: %s" % (detect.tag_id, detect.center))
-            print("tag_id: %s, Tag-Center-X-value: %s, Tag-Center-Y-Value: %s" % (detect.tag_id, detect.x, detect.y)) #Experimental probably doesnt work yet
+            print(apriltag.x_translation())
+            #print("tag_id: %s, Tag-Center-X-value: %s, Tag-Center-Y-Value: %s" % (detect.tag_id, apriltag.x_translation(), apriltag.y_translation())) #Experimental probably doesnt work yet
+
+            if detect.tag_id == 69:
+                print("UwU 💖💖✨🥺,,👉👈💖💖✨🥺,,,,👉👈💖💖✨🥺,,👉👈✨✨✨,,👉👈💖💖✨🥺👉👈💖💖✨🥺,,,,👉👈💖💖,👉👈💖💖✨✨👉👈💖💖✨✨,👉👈✨✨✨,,👉👈💖💖✨,,,,👉👈💖💖✨,👉👈💖💖✨🥺,,,,👉👈💖💖✨,👉👈💖✨✨✨✨🥺,,,👉👈💖💖✨,👉👈💖💖✨🥺,👉👈")
 
             image = plotPoint(image, detect.center, CENTER_COLOR)
             image = plotText(image, detect.center, CENTER_COLOR, detect.tag_id)
