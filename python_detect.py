@@ -14,7 +14,7 @@ CENTER_COLOR = (0, 255, 0)
 CORNER_COLOR = (255, 0, 255)
 
 #Camera Constants
-VIDEO_DEV = 2 #Video Device ID for the camera used. Probably 0 or 1 for Webcam, 2 or 3 for internal if on laptop and more than one device
+VIDEO_DEV = 0 #Video Device ID for the camera used. Probably 0 or 1 for Webcam, 2 or 3 for internal if on laptop and more than one device
 FRAME_HEIGHT = 480 #Height of the camera being used
 FRAME_WIDTH = 640 #Width of the camera being used
 FRAME_RATE = 30
@@ -113,23 +113,23 @@ while looping:
             #print(cv2.solvePnP(objectPoints, imagePoints, camInfo, None, useExtrinsicGuess=False, flags=SOLVEPNP_IPPE_SQUARE))
             #print("rvec:", rvec)
             #print("tvec:", tvec)
-            #R = cv2.Rodrigues(rvec)[0]
-            #print("R:", R)
-            #yaw = np.arctan2(R[0,2],R[2,2])*180/np.pi # 180//np.pi gets to integers?
-            #roll = np.arcsin(-R[1][2])*180/np.pi
-            #pitch = np.arctan2(R[1,0],R[1,1])*180/np.pi
+            R = cv2.Rodrigues(rvec)[0]
+            # print("R:", R)
+            yaw = np.arctan2(R[0,2],R[2,2])*(180/np.pi) # 180//np.pi gets to integers?
+            roll = np.arcsin(-R[1][2])*(180/np.pi)
+            pitch = np.arctan2(R[1,0],R[1,1])*(180/np.pi)
 
             # rvec_matrix = cv2.Rodrigues(rvec)[0]
             # proj_matrix = np.hstack((rvec_matrix, tvec))
             # eulerAngles = -cv2.decomposeProjectionMatrix(proj_matrix)[6] 
 
-            # yaw_degrees   = eulerAngles[1]
-            # pitch_degrees = eulerAngles[0]
-            # roll_degrees  = eulerAngles[2]
+            # yaw   = eulerAngles[1]
+            # pitch = eulerAngles[0]
+            # roll  = eulerAngles[2]
 
-            # print("\n", yaw_degrees)
-            # print(pitch_degrees)
-            # print(roll_degrees)
+            print("\nYaw", yaw)
+            print("pitch", pitch)
+            print("roll", roll)
 
     cv2.imshow('Vid-Stream', image) #Comment out when running in headless mode to not piss off python
 

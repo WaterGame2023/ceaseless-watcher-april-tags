@@ -4,3 +4,4 @@ cmake
 pynetworktables
 pkgconfig
 #robotpy-cscore
+tkinter
