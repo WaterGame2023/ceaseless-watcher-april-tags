@@ -1,10 +1,9 @@
 import math
-from tkinter import NONE
 import cv2
 import numpy as np
-import apriltag
+import apriltag 
 from networktables import NetworkTables
-from cscore import CameraServer
+#from cscore import CameraServer
 
 #NetworkTables.initialize(server='10.25.31.2') #Uncomment when there is a NT server
 NT = NetworkTables.getTable("ceaseless-watcher")
@@ -14,20 +13,21 @@ CENTER_COLOR = (0, 255, 0)
 CORNER_COLOR = (255, 0, 255)
 
 #Camera Constants
-VIDEO_DEV = 0 #Video Device ID for the camera used. Probably 0 or 1 for Webcam, 2 or 3 for internal if on laptop and more than one device
+VIDEO_DEV = 2 #Video Device ID for the camera used. Probably 0 or 1 for Webcam, 2 or 3 for internal if on laptop and more than one device
 FRAME_HEIGHT = 480 #Height of the camera being used
 FRAME_WIDTH = 640 #Width of the camera being used
-FRAME_RATE = 30
+FRAME_RATE = 60 #Frame rate of the camera being used
 
-def cameraServer():
-    camServe = CameraServer.getInstance()
-    camServe.enableLogging()
-    camServe.startAutomaticCapture(image) #this might work
-    camServe.waitForever()
+#def cameraServer():
+ #   camServe = CameraServer.getInstance()
+  #  camServe.enableLogging()
+    #camServe.startAutomaticCapture(image) #this might work
+   # camServe.waitForever()
 
 TAG_SIZE = .2 #Tag size in meters
 
-camInfo = np.matrix([ [1430, 0, 320], [ 0, 1430, 240], [ 0, 0, 1] ])
+camInfo = np.matrix([[2.79351724e+03, 0.00000000e+00, 3.37621619e+02], [0.00000000e+00, 2.88140551e+03, 2.65131081e+02], [0.00000000e+00, 0.00000000e+00, 1.00000000e+00] ])
+distCoeffs = np.matrix([[-2.45326809e+00], [1.28464799e+02], [2.88828541e-02], [-4.27263376e-02], [-3.74878188e+03]])
 
 def plotPoint(image, center, color):
     center = (int(center[0]), int(center[1]))
@@ -48,6 +48,7 @@ def plotText(image, center, color, text):
     return cv2.putText(image, str(text), center, cv2.FONT_HERSHEY_SIMPLEX,
                        1, color, 3)
 
+options = apriltag.DetectorOptions(families="all")
 detector = apriltag.Detector()
 cam = cv2.VideoCapture(VIDEO_DEV) #ID of the camera being used
 
@@ -64,36 +65,20 @@ while looping:
 	# look for tags
     detections = detector.detect(grayimg)
     if not detections:
-        NT.putString("tagfound", 0)
-        print("No Tag found.  Looking for tags")
+        print("No tags detected")
     else:
         for detect in detections:
-            #print("\ntag_id: %s, center-yx: %s" % (detect.tag_id, detect.center))
-            print("\ntag-id: %s center-x: %s \ntag-id: %s center-y: %s" % (detect.tag_id, detect.center[1], detect.tag_id, detect.center[0]))
-
-            if detect.tag_id == 69:
-                print("UwU 💖💖✨🥺,,👉👈💖💖✨🥺,,,,👉👈💖💖✨🥺,,👉👈✨✨✨,,👉👈💖💖✨🥺👉👈💖💖✨🥺,,,,👉👈💖💖,👉👈💖💖✨✨👉👈💖💖✨✨,👉👈✨✨✨,,👉👈💖💖✨,,,,👉👈💖💖✨,👉👈💖💖✨🥺,,,,👉👈💖💖✨,👉👈💖✨✨✨✨🥺,,,👉👈💖💖✨,👉👈💖💖✨🥺,👉👈")
-
             centerX = detect.center[0]
             centerY = detect.center[1]
 
             centerOriginX = (centerX - (FRAME_WIDTH / 2))
             centerOriginY = ((FRAME_HEIGHT / 2) - centerY)
 
-            #print("\nX-Axis:", centerOriginX, "\n") #Debug
-            #print("Y-Axis:", centerOriginY, "\n") #Debug
-
-            #print("\ntag-id:", detect.tag_id, "center-x:", centerX) #Debug
-            #print("tag-id:", detect.tag_id, "center-y:", centerY) #Debug
+            print("\nX-Axis:", centerOriginX, "\n") #Debug
+            print("Y-Axis:", centerOriginY, "\n") #Debug
 
             image = plotPoint(image, detect.center, CENTER_COLOR)
             image = plotText(image, detect.center, CENTER_COLOR, detect.tag_id)
-
-            NT.putString("tag_center", detect.center) #Uses default openCV Coordinate system w/ origin top-left
-            NT.putString("tag_x", centerOriginX) #x-axis value of tag
-            NT.putString("tag_y", centerOriginY) #y-axis value of tag
-            NT.putString("tag_id", detect.tag_id)
-            NT.putString("tagfound", 1)
 
             for corner in detect.corners:
                 image = plotPoint(image, corner, CORNER_COLOR)
@@ -102,14 +87,12 @@ while looping:
             objectPoints= np.array([ [-varName,varName, 0], [ varName, varName, 0], [ varName, -varName, 0], [-varName, -varName, 0] ])
             SOLVEPNP_IPPE_SQUARE =7 # (enumeration not working: 
             # https://docs.opencv.org/master/d9/d0c/group__calib3d.html#ga357634492a94efe8858d0ce1509da869)
-
-        for d in detections:
                 
             #print(d['lb-rb-rt-lt'])
             imagePoints = np.array([detect.corners])
             #print(imagePoints)
             # solvePnP docs: https://docs.opencv.org/master/d9/d0c/group__calib3d.html#ga549c2075fac14829ff4a58bc931c033d
-            retval, tvec, rvec = cv2.solvePnP(objectPoints, imagePoints, camInfo, None, useExtrinsicGuess=False, flags=SOLVEPNP_IPPE_SQUARE)
+            retval, tvec, rvec = cv2.solvePnP(objectPoints, imagePoints, camInfo, None, useExtrinsicGuess=True, flags=SOLVEPNP_IPPE_SQUARE)
             #print(cv2.solvePnP(objectPoints, imagePoints, camInfo, None, useExtrinsicGuess=False, flags=SOLVEPNP_IPPE_SQUARE))
             #print("rvec:", rvec)
             #print("tvec:", tvec)
@@ -119,19 +102,12 @@ while looping:
             roll = np.arcsin(-R[1][2])*(180/np.pi)
             pitch = np.arctan2(R[1,0],R[1,1])*(180/np.pi)
 
-            # rvec_matrix = cv2.Rodrigues(rvec)[0]
-            # proj_matrix = np.hstack((rvec_matrix, tvec))
-            # eulerAngles = -cv2.decomposeProjectionMatrix(proj_matrix)[6] 
+            yrpText = "Y: " + str(round(yaw, 2)) + " R: " + str(round(roll, 2)) + " P: " + str(round(pitch, 2))
+            image = plotText(image, (detect.center[0], detect.center[1] + 20), CENTER_COLOR, yrpText)
 
-            # yaw   = eulerAngles[1]
-            # pitch = eulerAngles[0]
-            # roll  = eulerAngles[2]
 
-            print("\nYaw", yaw)
-            print("pitch", pitch)
-            print("roll", roll)
-
-    cv2.imshow('Vid-Stream', image) #Comment out when running in headless mode to not piss off python
+    dst = cv2.undistort(image, camInfo, distCoeffs, None, camInfo)
+    cv2.imshow('Vid-Stream', dst) #Comment out when running in headless mode to not piss off python
 
     key = cv2.waitKey(100)
 
