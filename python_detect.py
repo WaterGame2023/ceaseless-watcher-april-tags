@@ -120,17 +120,24 @@ while looping:
             #print("tvec:", tvec)
             R = cv2.Rodrigues(tvec)[0]
             # print("R:", R)
+
+            #Convert to yaw, pitch, roll
+
             yaw = np.arctan2(R[0,2],R[2,2])*180/np.pi # 180//np.pi gets to integers?
             pitch = np.arcsin(-R[1][2])*180/np.pi
             roll = (np.arctan2(R[1,0],R[1,1])*180/np.pi) + 180
 
-            # rvec_matrix = cv2.Rodrigues(rvec)[0]
-            # proj_matrix = np.hstack((rvec_matrix, tvec))
-            # eulerAngles = -cv2.decomposeProjectionMatrix(proj_matrix)[6] 
+            #This stuff only outputs in euler angles and should probably be removed but am keeping for debugging purposes
 
-            # yaw   = eulerAngles[1]
-            # pitch = eulerAngles[0]
-            # roll  = eulerAngles[2]
+            # rvec_matrix = cv2.Rodrigues(rvec)[0] #Debug
+            # proj_matrix = np.hstack((rvec_matrix, tvec)) #Debug
+            # eulerAngles = -cv2.decomposeProjectionMatrix(proj_matrix)[6] #Debug
+
+            # yaw   = eulerAngles[1] #Debug
+            # pitch = eulerAngles[0] #Debug
+            # roll  = eulerAngles[2] #Debug
+
+            #Output yaw, pitch, roll values to command line
 
             print("\nYaw", yaw)
             print("pitch", pitch)
