@@ -164,7 +164,7 @@ while looping:
     #Output window with the live feed from the camera and overlays
     cv2.imshow('Vid-Stream', image) #Comment out when running in headless mode to not piss off python
 
-    #Defines enter key and a 100ms delay
+    #Defines enter key and a 100ms delay before exiting the program
     key = cv2.waitKey(100)
 
     #If the enter key is pressed exit the program
