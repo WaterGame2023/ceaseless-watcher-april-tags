@@ -143,6 +143,12 @@ while looping:
             print("pitch", pitch)
             print("roll", roll)
 
+            #Output yaw, pitch, roll values to NetworkTables
+
+            NT.putString("yaw", yaw)
+            NT.putString("pitch", pitch)
+            NT.putString("roll", roll)
+
     cv2.imshow('Vid-Stream', image) #Comment out when running in headless mode to not piss off python
 
     key = cv2.waitKey(100)
