@@ -122,7 +122,7 @@ while looping:
             # print("R:", R)
             yaw = np.arctan2(R[0,2],R[2,2])*180/np.pi # 180//np.pi gets to integers?
             pitch = np.arcsin(-R[1][2])*180/np.pi
-            roll = np.arctan2(R[1,0],R[1,1])*180/np.pi
+            roll = (np.arctan2(R[1,0],R[1,1])*180/np.pi) + 180
 
             # rvec_matrix = cv2.Rodrigues(rvec)[0]
             # proj_matrix = np.hstack((rvec_matrix, tvec))
