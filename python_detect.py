@@ -1,3 +1,4 @@
+from binhex import LINELEN
 import math
 from tkinter import NONE
 import cv2
@@ -27,7 +28,11 @@ def cameraServer():
 
 TAG_SIZE = .2 #Tag size in meters
 
-camInfo = np.matrix([ [1430, 0, 320], [ 0, 1430, 240], [ 0, 0, 1] ])
+camInfo = np.matrix([[689.86477877,   0,         312.77834974],
+ [  0,         695.01487988, 280.708403  ],
+ [  0,           0,           1.0        ]]) #FIXME For when you use this you will need to run camera_calib unless you want stuff to be really wrong
+
+distCoeff = np.matrix([[-5.32044320e-02,  4.61488555e-01, -9.37542209e-04, -2.00168792e-03, -1.30772959e+00]]) #FIXME For when you use this you will need to run camera_calib unless you want stuff to be really wrong
 
 def plotPoint(image, center, color):
     center = (int(center[0]), int(center[1]))
@@ -109,15 +114,15 @@ while looping:
             imagePoints = np.array([detect.corners])
             #print(imagePoints)
             # solvePnP docs: https://docs.opencv.org/master/d9/d0c/group__calib3d.html#ga549c2075fac14829ff4a58bc931c033d
-            retval, tvec, rvec = cv2.solvePnP(objectPoints, imagePoints, camInfo, None, useExtrinsicGuess=False, flags=SOLVEPNP_IPPE_SQUARE)
-            #print(cv2.solvePnP(objectPoints, imagePoints, camInfo, None, useExtrinsicGuess=False, flags=SOLVEPNP_IPPE_SQUARE))
+            retval, tvec, rvec = cv2.solvePnP(objectPoints, imagePoints, camInfo, distCoeff, useExtrinsicGuess=False, flags=SOLVEPNP_IPPE_SQUARE)
+            #print(cv2.solvePnP(objectPoints, imagePoints, camInfo, distCoeff, useExtrinsicGuess=False, flags=SOLVEPNP_IPPE_SQUARE))
             #print("rvec:", rvec)
             #print("tvec:", tvec)
-            R = cv2.Rodrigues(rvec)[0]
+            R = cv2.Rodrigues(tvec)[0]
             # print("R:", R)
-            yaw = np.arctan2(R[0,2],R[2,2])*(180/np.pi) # 180//np.pi gets to integers?
-            roll = np.arcsin(-R[1][2])*(180/np.pi)
-            pitch = np.arctan2(R[1,0],R[1,1])*(180/np.pi)
+            yaw = np.arctan2(R[0,2],R[2,2])*180/np.pi # 180//np.pi gets to integers?
+            pitch = np.arcsin(-R[1][2])*180/np.pi
+            roll = np.arctan2(R[1,0],R[1,1])*180/np.pi
 
             # rvec_matrix = cv2.Rodrigues(rvec)[0]
             # proj_matrix = np.hstack((rvec_matrix, tvec))

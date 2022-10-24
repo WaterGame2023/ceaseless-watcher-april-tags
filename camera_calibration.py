@@ -74,7 +74,7 @@ for filename in images:
 
 cv2.destroyAllWindows()
 
-h, w = image.shape[:2]
+#h, w = image.shape[:2]
 
 
 # Perform camera calibration by
