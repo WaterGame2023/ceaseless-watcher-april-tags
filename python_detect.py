@@ -86,7 +86,7 @@ while looping:
             if detect.tag_id == 69:
                 print("UwU 💖💖✨🥺,,👉👈💖💖✨🥺,,,,👉👈💖💖✨🥺,,👉👈✨✨✨,,👉👈💖💖✨🥺👉👈💖💖✨🥺,,,,👉👈💖💖,👉👈💖💖✨✨👉👈💖💖✨✨,👉👈✨✨✨,,👉👈💖💖✨,,,,👉👈💖💖✨,👉👈💖💖✨🥺,,,,👉👈💖💖✨,👉👈💖✨✨✨✨🥺,,,👉👈💖💖✨,👉👈💖💖✨🥺,👉👈")
 
-            #Detects the center of the tag and outputs the X and Y coordinates induvidually
+            #Detects the center of the tag and outputs the X and Y coordinates individually
             centerX = detect.center[0]
             centerY = detect.center[1]
 
