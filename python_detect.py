@@ -75,9 +75,11 @@ while looping:
     grayimg = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 	# look for tags
     detections = detector.detect(grayimg)
-    if not detections:
-        NT.putString("tagfound", 0)
+
+    if not detections: #Runs stuff in here if no tags are detected
+        NT.putString("tagfound", 0) #Outputs a 0 to NetworkTables if no tag is found
         print("No Tag found.  Looking for tags")
+        
     else:
         for detect in detections:
             #print("\ntag_id: %s, center-yx: %s" % (detect.tag_id, detect.center))
@@ -110,8 +112,8 @@ while looping:
             NT.putString("tag_center", detect.center) #Uses default openCV Coordinate system w/ origin top-left
             NT.putString("tag_x", centerOriginX) #x-axis value of tag
             NT.putString("tag_y", centerOriginY) #y-axis value of tag
-            NT.putString("tag_id", detect.tag_id)
-            NT.putString("tagfound", 1)
+            NT.putString("tag_id", detect.tag_id) #Outputs the tag ID to NetworkTables
+            NT.putString("tagfound", 1) #Outputs a 1 to NetworkTables if a tag is found
 
             #Plots points in the corners of the tag
             for corner in detect.corners:
