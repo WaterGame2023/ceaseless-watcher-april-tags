@@ -175,6 +175,11 @@ while looping:
             NT.putString("pitch_deg", pitch_deg) #Pitch
             NT.putString("roll_deg", roll_deg) #Roll
 
+            #Output yaw, pitch, roll values in radians to NetworkTables
+            NT.putString("yaw_rads", yaw)   #Yaw in rads
+            NT.putString("pitch_rads", pitch) #Pitch in rads
+            NT.putString("roll_rads", roll) #Roll in rads
+
     #Output window with the live feed from the camera and overlays
     cv2.imshow('Vid-Stream', image) #Comment out when running in headless mode to not piss off python
 
