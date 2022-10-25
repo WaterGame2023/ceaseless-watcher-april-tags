@@ -145,9 +145,9 @@ while looping:
 
             #New stuff for debug
             sy = math.sqrt(R[0,0] * R[0,0] +  R[1,0] * R[1,0]) #Idk what this does tbh
-            yaw = math.atan2(-R[1,0], R[0,0]) #Debug
-            pitch = math.atan2(-R[2,0], sy) #Debug
-            roll = math.math.atan2(R[2,1] , R[2,2]) #Debug
+            yaw = (math.atan2(-R[1,0], R[0,0])*180/np.pi) #Debug
+            pitch = (math.atan2(-R[2,0], sy)*180/np.pi) #Debug
+            roll = (math.atan2(R[2,1] , R[2,2])*180/np.pi) #Debug
 
             #This stuff only outputs in euler angles and should probably be removed but am keeping for debugging purposes
             # rvec_matrix = cv2.Rodrigues(rvec)[0] #Debug
