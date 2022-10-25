@@ -138,10 +138,16 @@ while looping:
             R = cv2.Rodrigues(tvec)[0]
             # print("R:", R)
 
-            #Convert to yaw, pitch, roll
-            yaw = np.arctan2(R[0,2],R[2,2])*180/np.pi # 180//np.pi gets to integers?
-            pitch = np.arcsin(-R[1][2])*180/np.pi
-            roll = (np.arctan2(R[1,0],R[1,1])*180/np.pi) + 180
+            #Convert to yaw, pitch, roll in degrees
+            # yaw = (np.arctan2(R[0,2],R[2,2])*180/np.pi) % 180 # 180//np.pi gets to integers?
+            # pitch = np.arcsin(-R[1][2])*180/np.pi
+            # roll = (np.arctan2(R[1,0],R[1,1])*180/np.pi) + 180
+
+            #New stuff for debug
+            sy = math.sqrt(R[0,0] * R[0,0] +  R[1,0] * R[1,0]) #Idk what this does tbh
+            yaw = math.atan2(-R[1,0], R[0,0]) #Debug
+            pitch = math.atan2(-R[2,0], sy) #Debug
+            roll = math.math.atan2(R[2,1] , R[2,2]) #Debug
 
             #This stuff only outputs in euler angles and should probably be removed but am keeping for debugging purposes
             # rvec_matrix = cv2.Rodrigues(rvec)[0] #Debug
