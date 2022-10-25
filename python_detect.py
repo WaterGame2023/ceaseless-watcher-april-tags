@@ -20,14 +20,15 @@ FRAME_HEIGHT = 480 #Height of the camera being used
 FRAME_WIDTH = 640 #Width of the camera being used
 FRAME_RATE = 30 #Desired Frame Rate
 
+#Tag Constants
+TAG_SIZE = .2 #Tag size in meters
+
 #Starts camera server
 def cameraServer():
     camServe = CameraServer.getInstance()
     camServe.enableLogging()
     camServe.startAutomaticCapture(image) #this might work
     camServe.waitForever()
-
-TAG_SIZE = .2 #Tag size in meters
 
 #Camera Information thats needed for solvePnp
 camInfo = np.matrix([[689.86477877,   0,         312.77834974],
