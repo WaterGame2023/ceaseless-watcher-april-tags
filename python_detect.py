@@ -138,13 +138,18 @@ while looping:
             R = cv2.Rodrigues(tvec)[0]
             # print("R:", R) #Debug
 
-            #Convert to yaw, pitch, roll in degrees
+            #Calculates YPR and outputs in radians
             sy = math.sqrt(R[0,0] * R[0,0] +  R[1,0] * R[1,0]) #Idk what this does tbh
-            yaw = (math.atan2(-R[1,0], R[0,0])*180/np.pi) #Yaw
-            pitch = (math.atan2(-R[2,0], sy)*180/np.pi) #Pitch
-            # yaw = (np.arctan2(R[0,2],R[2,2])*180/np.pi) % 180 # 180//np.pi gets to integers? #Broken formula
-            # pitch = np.arcsin(-R[1][2])*180/np.pi #Broken formula
-            roll = (np.arctan2(R[1,0],R[1,1])*180/np.pi) + 180 #Roll
+            yaw = math.atan2(-R[1,0], R[0,0]) #Yaw
+            pitch = math.atan2(-R[2,0], sy) #Pitch
+            # yaw = np.arctan2(R[0,2],R[2,2]) % 180 #Broken formula, modulus stuff to test
+            # pitch = np.arcsin(-R[1][2]) #Broken formula
+            roll = np.arctan2(R[1,0],R[1,1]) #Roll
+
+            #Convert YPR to degrees
+            yaw_deg = yaw * 180 / np.pi
+            pitch_deg = pitch * 180 / np.pi
+            roll_deg = (roll * 180 / np.pi) + 180
 
             #New stuff for debug, some of it works, some of it doesn't
             # sy = math.sqrt(R[0,0] * R[0,0] +  R[1,0] * R[1,0]) #Tested, works
@@ -165,10 +170,10 @@ while looping:
             print("pitch", pitch)
             print("roll", roll)
 
-            #Output yaw, pitch, roll values to NetworkTables
-            NT.putString("yaw", yaw)   #Yaw
-            NT.putString("pitch", pitch) #Pitch
-            NT.putString("roll", roll) #Roll
+            #Output yaw, pitch, roll values in degrees to NetworkTables
+            NT.putString("yaw_deg", yaw_deg)   #Yaw
+            NT.putString("pitch_deg", pitch_deg) #Pitch
+            NT.putString("roll_deg", roll_deg) #Roll
 
     #Output window with the live feed from the camera and overlays
     cv2.imshow('Vid-Stream', image) #Comment out when running in headless mode to not piss off python
