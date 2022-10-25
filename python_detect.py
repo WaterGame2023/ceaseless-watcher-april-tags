@@ -1,6 +1,4 @@
-from binhex import LINELEN
 import math
-from tkinter import NONE
 import cv2
 import numpy as np
 import apriltag
@@ -79,7 +77,7 @@ while looping:
     if not detections: #Runs stuff in here if no tags are detected
         NT.putString("tagfound", 0) #Outputs a 0 to NetworkTables if no tag is found
         print("No Tag found.  Looking for tags")
-        
+
     else:
         for detect in detections:
             #print("\ntag_id: %s, center-yx: %s" % (detect.tag_id, detect.center))
