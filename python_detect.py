@@ -133,21 +133,24 @@ while looping:
             #solvePNP returns rotation and translation vectors
             retval, tvec, rvec = cv2.solvePnP(objectPoints, imagePoints, camInfo, distCoeff, useExtrinsicGuess=False, flags=SOLVEPNP_IPPE_SQUARE)
             #print(cv2.solvePnP(objectPoints, imagePoints, camInfo, distCoeff, useExtrinsicGuess=False, flags=SOLVEPNP_IPPE_SQUARE))
-            #print("rvec:", rvec)
-            #print("tvec:", tvec)
+            #print("rvec:", rvec) #Debug
+            #print("tvec:", tvec) #Debug
             R = cv2.Rodrigues(tvec)[0]
-            # print("R:", R)
+            # print("R:", R) #Debug
 
             #Convert to yaw, pitch, roll in degrees
-            # yaw = (np.arctan2(R[0,2],R[2,2])*180/np.pi) % 180 # 180//np.pi gets to integers?
-            # pitch = np.arcsin(-R[1][2])*180/np.pi
-            # roll = (np.arctan2(R[1,0],R[1,1])*180/np.pi) + 180
-
-            #New stuff for debug
             sy = math.sqrt(R[0,0] * R[0,0] +  R[1,0] * R[1,0]) #Idk what this does tbh
-            yaw = (math.atan2(-R[1,0], R[0,0])*180/np.pi) #Debug
-            pitch = (math.atan2(-R[2,0], sy)*180/np.pi) #Debug
-            roll = (math.atan2(R[2,1] , R[2,2])*180/np.pi) #Debug
+            yaw = (math.atan2(-R[1,0], R[0,0])*180/np.pi) #Yaw
+            pitch = (math.atan2(-R[2,0], sy)*180/np.pi) #Pitch
+            # yaw = (np.arctan2(R[0,2],R[2,2])*180/np.pi) % 180 # 180//np.pi gets to integers? #Broken formula
+            # pitch = np.arcsin(-R[1][2])*180/np.pi #Broken formula
+            roll = (np.arctan2(R[1,0],R[1,1])*180/np.pi) + 180 #Roll
+
+            #New stuff for debug, some of it works, some of it doesn't
+            # sy = math.sqrt(R[0,0] * R[0,0] +  R[1,0] * R[1,0]) #Tested, works
+            # yaw = (math.atan2(-R[1,0], R[0,0])*180/np.pi) #Tested, works
+            # pitch = (math.atan2(-R[2,0], sy)*180/np.pi) #Tested, works
+            # roll = (math.atan2(R[2,1] , R[2,2])*180/np.pi) #Tested, does not work as planned
 
             #This stuff only outputs in euler angles and should probably be removed but am keeping for debugging purposes
             # rvec_matrix = cv2.Rodrigues(rvec)[0] #Debug
@@ -163,9 +166,9 @@ while looping:
             print("roll", roll)
 
             #Output yaw, pitch, roll values to NetworkTables
-            NT.putString("yaw", yaw)
-            NT.putString("pitch", pitch)
-            NT.putString("roll", roll)
+            NT.putString("yaw", yaw)   #Yaw
+            NT.putString("pitch", pitch) #Pitch
+            NT.putString("roll", roll) #Roll
 
     #Output window with the live feed from the camera and overlays
     cv2.imshow('Vid-Stream', image) #Comment out when running in headless mode to not piss off python
