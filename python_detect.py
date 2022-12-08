@@ -181,9 +181,9 @@ while looping:
             # roll  = eulerAngles[2] #Debug
 
             #Output yaw, pitch, roll values to command line
-            print("\nYaw", yaw_deg)
-            print("pitch", pitch_deg)
-            print("roll", roll_deg)
+            print("\nYaw", yaw)
+            print("pitch", pitch)
+            print("roll", roll)
 
             #Output yaw, pitch, roll values in degrees to NetworkTables
             NT.putString("yaw_deg", yaw_deg)   #Yaw
