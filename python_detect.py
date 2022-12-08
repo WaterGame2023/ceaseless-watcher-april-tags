@@ -21,6 +21,15 @@ FRAME_RATE = 30 #Desired Frame Rate
 #Tag Constants
 TAG_SIZE = .2 #Tag size in meters
 
+#Camera server funnies
+camera = image
+camera.setVideoMode(cs.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
+
+mjpegServer = cs.MjpegServer("httpserver", 8081)
+mjpegServer.setSource(camera)
+
+print("mjpg server listening at http://0.0.0.0:8081")
+
 #Camera Information thats needed for solvePnp
 camInfo = np.matrix([[689.86477877,   0,         312.77834974],
  [  0,         695.01487988, 280.708403  ],
@@ -110,24 +119,6 @@ while looping:
             #Plots points in the corners of the tag
             for corner in detect.corners:
                 image = plotPoint(image, corner, CORNER_COLOR)
-    
-        #Broken Camera Server stuff
-        CsCamera = image
-        # Do it in another thread
-        def _thread():
-            img = None
-            while True:
-                retval, img = CsCamera
-                if retval:
-                    camera.putFrame(img)
-
-        th = threading.Thread(target=_thread, daemon=True)
-        th.start()
-
-        mjpegServer = cs.MjpegServer("httpserver", 8081)
-        mjpegServer.setSource(camera)
-
-        print("mjpg server listening at http://0.0.0.0:8081")
                 
         #Stuff needed for SolvePnP
         halfTagSize = TAG_SIZE/2
