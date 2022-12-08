@@ -21,15 +21,6 @@ FRAME_RATE = 30 #Desired Frame Rate
 #Tag Constants
 TAG_SIZE = .2 #Tag size in meters
 
-#Camera server funnies
-camera = image
-camera.setVideoMode(cs.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
-
-mjpegServer = cs.MjpegServer("httpserver", 8081)
-mjpegServer.setSource(camera)
-
-print("mjpg server listening at http://0.0.0.0:8081")
-
 #Camera Information thats needed for solvePnp
 camInfo = np.matrix([[689.86477877,   0,         312.77834974],
  [  0,         695.01487988, 280.708403  ],
@@ -187,6 +178,18 @@ while looping:
 
     #Output window with the live feed from the camera and overlays
     # cv2.imshow('Vid-Stream', image) #Comment out when running in headless mode to not piss off python
+    
+        
+    #Camera server funnies
+    cvsink = cs.CvSink("cvsink")
+    cvsink.setSource(cam)
+
+    cvSource = cs.CvSource("cvsource", cs.VideoMode.PixelFormat.kMJPEG, 320, 240, 30)
+    cvMjpegServer = cs.MjpegServer("cvhttpserver", 8082)
+    cvMjpegServer.setSource(cvSource)
+
+    print("OpenCV output mjpg server listening at http://0.0.0.0:8082")
+
 
     #Defines enter key and a 100ms delay before exiting the program
     key = cv2.waitKey(100)
