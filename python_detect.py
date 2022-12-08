@@ -4,7 +4,6 @@ import numpy as np
 import apriltag
 from networktables import NetworkTables
 import cscore as cs
-import threading
 
 #NetworkTables.initialize(server='10.25.31.2') #Uncomment when there is a NT server
 NT = NetworkTables.getTable("ceaseless-watcher")
@@ -67,22 +66,6 @@ while looping:
     grayimg = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 	# look for tags
     detections = detector.detect(grayimg)
-    
-    #Broken Camera Server stuff
-    CsCamera = image
-    # Do it in another thread
-    def _thread():
-        img = None
-        while True:
-            retval, img = CsCamera
-            if retval:
-                camera.putFrame(img)
-
-    th = threading.Thread(target=_thread, daemon=True)
-    th.start()
-
-    mjpegServer = cs.MjpegServer("httpserver", 8081)
-    mjpegServer.setSource(image)
 
     if not detections: #Runs stuff in here if no tags are detected
         NT.putString("tagfound", 0) #Outputs a 0 to NetworkTables if no tag is found
@@ -128,6 +111,21 @@ while looping:
             for corner in detect.corners:
                 image = plotPoint(image, corner, CORNER_COLOR)
     
+        #Broken Camera Server stuff
+        CsCamera = image
+        # Do it in another thread
+        def _thread():
+            img = None
+            while True:
+                retval, img = CsCamera
+                if retval:
+                    camera.putFrame(img)
+
+        th = threading.Thread(target=_thread, daemon=True)
+        th.start()
+
+        mjpegServer = cs.MjpegServer("httpserver", 8081)
+        mjpegServer.setSource(camera)
 
         print("mjpg server listening at http://0.0.0.0:8081")
                 
