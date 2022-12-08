@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 import apriltag
 from networktables import NetworkTables
-from cscore import CameraServer
+import cscore as cs
 
 #NetworkTables.initialize(server='10.25.31.2') #Uncomment when there is a NT server
 NT = NetworkTables.getTable("ceaseless-watcher")
@@ -20,13 +20,6 @@ FRAME_RATE = 30 #Desired Frame Rate
 
 #Tag Constants
 TAG_SIZE = .2 #Tag size in meters
-
-#Starts camera server
-def cameraServer():
-    camServe = CameraServer.getInstance()
-    camServe.enableLogging()
-    camServe.startAutomaticCapture(image) #this might work
-    camServe.waitForever()
 
 #Camera Information thats needed for solvePnp
 camInfo = np.matrix([[689.86477877,   0,         312.77834974],
@@ -77,6 +70,7 @@ while looping:
     if not detections: #Runs stuff in here if no tags are detected
         NT.putString("tagfound", 0) #Outputs a 0 to NetworkTables if no tag is found
         print("No Tag found.  Looking for tags")
+        
 
     else:
         for detect in detections:
@@ -116,7 +110,25 @@ while looping:
             #Plots points in the corners of the tag
             for corner in detect.corners:
                 image = plotPoint(image, corner, CORNER_COLOR)
+    
+        #Broken Camera Server stuff
+        CsCamera = image
+        # Do it in another thread
+        def _thread():
+            img = None
+            while True:
+                retval, img = CsCamera
+                if retval:
+                    camera.putFrame(img)
 
+        th = threading.Thread(target=_thread, daemon=True)
+        th.start()
+
+        mjpegServer = cs.MjpegServer("httpserver", 8081)
+        mjpegServer.setSource(camera)
+
+        print("mjpg server listening at http://0.0.0.0:8081")
+                
         #Stuff needed for SolvePnP
         halfTagSize = TAG_SIZE/2
         objectPoints= np.array([ [-halfTagSize,halfTagSize, 0], [ halfTagSize, halfTagSize, 0], [ halfTagSize, -halfTagSize, 0], [-halfTagSize, -halfTagSize, 0] ])
@@ -180,9 +192,10 @@ while looping:
             NT.putString("yaw_rads", yaw)   #Yaw in rads
             NT.putString("pitch_rads", pitch) #Pitch in rads
             NT.putString("roll_rads", roll) #Roll in rads
+            
 
     #Output window with the live feed from the camera and overlays
-    cv2.imshow('Vid-Stream', image) #Comment out when running in headless mode to not piss off python
+    # cv2.imshow('Vid-Stream', image) #Comment out when running in headless mode to not piss off python
 
     #Defines enter key and a 100ms delay before exiting the program
     key = cv2.waitKey(100)
@@ -190,8 +203,6 @@ while looping:
     #If the enter key is pressed exit the program
     if key == 13:
         looping = False
-
-    #cameraServer() #Uncomment if you want things to break
 
 #Closes the output window and writes the output file
 cv2.destroyAllWindows()
